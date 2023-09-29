@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTable } from 'react-table';
+import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true); 
   const columns = React.useMemo(
     () => [
       {
@@ -30,9 +33,11 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        'http://localhost:3000/fetch-data'
+        'https://googlesheetsapi.onrender.com/fetch-data'
       );
+      toast.success("Fetched successfully");
       setData(response.data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -46,6 +51,8 @@ const Dashboard = () => {
 
   return (
     <div className="">
+        {loading ? <div><h1 className='font-bold'>Loading...</h1></div> : (
+        <>
         <nav className="bg-blue-500 p-4 flex justify-between items-center">
             <div className="text-white font-bold text-lg">Home</div>
             <div>
@@ -53,14 +60,13 @@ const Dashboard = () => {
                 Sync Data
             </button>
             <button className="bg-white text-blue-500 font-bold py-2 px-4 rounded hover:bg-blue-500 hover:text-white">
-                Add Data
+              <Link to = '/add'>
+              Add Row
+              </Link>
             </button>
             </div>
         </nav>
        <div className='pt-4 bg-indigo-100'>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 sm:mb-2 md:mb-4 lg:mb-2 xl:mb-4" onClick={fetchData}>
-                Sync Data
-            </button>
             <div className="overflow-x-auto flex items-center justify-center">
                 <table {...getTableProps()} className="table-auto w-auto border-collapse border">
                     <thead className="bg-gray-800 text-white">
@@ -101,9 +107,10 @@ const Dashboard = () => {
                     </tbody>
                 </table>
                 </div>
-
+                    
        </div> 
-      
+       </>
+      )}
     </div>
   );
 }
